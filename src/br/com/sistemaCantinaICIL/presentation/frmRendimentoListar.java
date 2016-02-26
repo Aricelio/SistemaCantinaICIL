@@ -186,7 +186,7 @@ public class frmRendimentoListar extends JInternalFrame
         // Configuração da Interface InternalFramListener
         this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
         this.addInternalFrameListener(this);
-        
+
         // Altera as cores da tabela
         ChangeColorRendimento changeColor = new ChangeColorRendimento();
         tblListagem.setDefaultRenderer(Object.class, changeColor);
@@ -208,23 +208,23 @@ public class frmRendimentoListar extends JInternalFrame
 
         try {
             DefaultTableModel model = new DefaultTableModel();
-            
+
             model.addColumn("Código");
             model.addColumn("Nome");
             model.addColumn("Descrição");
             model.addColumn("Valor");
-            model.addColumn("Data");            
+            model.addColumn("Data");
 
             for (Rendimento rend : list) {
 
-                Vector values = new Vector();                
-                String strData = format2.format(rend.getData().getTime());                                
-                
+                Vector values = new Vector();
+                String strData = format2.format(rend.getData().getTime());
+
                 values.add(0, rend.getId());
                 values.add(1, rend.getNome());
                 values.add(2, rend.getDescricao());
                 values.add(3, "R$ " + rend.getValor());
-                values.add(4, strData);                
+                values.add(4, strData);
 
                 model.addRow(values);
             }
@@ -246,54 +246,13 @@ public class frmRendimentoListar extends JInternalFrame
             String situacao = null;
             String tipo = null;
 
-            // Mes            
-            switch (cmbMeses.getSelectedIndex()) {
-                case 0:
-                    mes = 0;
-                    break;
-                case 1:
-                    mes = 1;
-                    break;
-                case 2:
-                    mes = 2;
-                    break;
-                case 3:
-                    mes = 3;
-                    break;
-                case 4:
-                    mes = 4;
-                    break;
-                case 5:
-                    mes = 5;
-                    break;
-                case 6:
-                    mes = 6;
-                    break;
-                case 7:
-                    mes = 7;
-                    break;
-                case 8:
-                    mes = 8;
-                    break;
-                case 9:
-                    mes = 9;
-                    break;
-                case 10:
-                    mes = 10;
-                    break;
-                case 11:
-                    mes = 11;
-                    break;
-                case 12:
-                    mes = 12;
-                    break;
-            }
-            
+            // Mes
+            mes = cmbMeses.getSelectedIndex();
+
             // Ordenacao
-            if(cmbOrdenação.getSelectedIndex() == 0){
+            if (cmbOrdenação.getSelectedIndex() == 0) {
                 ordenacao = 1; // Nome do Rendimento
-            }
-            else{
+            } else {
                 ordenacao = 2; // Data de Recebimento
             }
 
@@ -308,7 +267,7 @@ public class frmRendimentoListar extends JInternalFrame
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
-    // Metodo para o clique em um dos registros da tabela............................................................................
+    // Metodo para o clique em um dos registros da tabela.......................
     private void tblListagemMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblListagemMouseClicked
 
         try {
@@ -316,7 +275,7 @@ public class frmRendimentoListar extends JInternalFrame
             // Pega o ID do Rendimento clicado
             Object objID = tblListagem.getValueAt(tblListagem.getSelectedRow(), 0);
 
-            // Abre o Rendimento            
+            // Abre o Rendimento
             Rendimento rendimento = rendimentoDAO.Abrir((Long) objID);
 
             // Abre o Frame de Edição de Rendimentos
@@ -357,8 +316,8 @@ public class frmRendimentoListar extends JInternalFrame
             frmRendimentoEditar window = new frmRendimentoEditar(SIZE_JFRAME, null);
             centralizaForm(window);
             this.getParent().add(window);
-            window.setVisible(true);            
-            
+            window.setVisible(true);
+
             // Fecha o frame atual
             this.setVisible(false);
             this.dispose();
