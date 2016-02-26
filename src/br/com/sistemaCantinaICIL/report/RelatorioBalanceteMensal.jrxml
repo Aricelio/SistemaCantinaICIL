@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" printOrder="Horizontal" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="358eca7c-cc27-46e2-b7fd-749ccfb39613">
-	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.chart.pie.ignore.duplicated.key" value="true"/>
@@ -36,10 +36,6 @@
 					</textElement>
 					<text><![CDATA[Balancete Mensal]]></text>
 				</staticText>
-				<image>
-					<reportElement x="728" y="16" width="92" height="60" uuid="12443b19-67dd-438f-9fe9-1003799c9387"/>
-					<imageExpression><![CDATA["/home/aricelio-ti/NetBeansProjects/SistemaCantinaICIL/Arquivos/Imagens/logo.jpg"]]></imageExpression>
-				</image>
 				<textField pattern="MMMMM - yyyy" isBlankWhenNull="false">
 					<reportElement key="textField" x="422" y="57" width="287" height="31" forecolor="#FFFFFF" uuid="7bebb9bd-3dad-4ccb-8e40-e3fe398ea075"/>
 					<textElement verticalAlignment="Middle">

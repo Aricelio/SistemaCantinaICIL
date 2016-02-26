@@ -21,46 +21,45 @@ public class frmDespesaEditar extends JInternalFrame
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private Despesa despesa;
 
-    //Construtor..........................................................................................................................................
-    public frmDespesaEditar(Dimension sizeJFrame, Despesa d){
+    //Construtor................................................................
+    public frmDespesaEditar(Dimension sizeJFrame, Despesa d) {
 
         // Inicializa os componentes
         initComponents();
         this.SIZE_JFRAME = sizeJFrame;
-        this.despesa = d;    
-        
+        this.despesa = d;
+
         setFrame();
-    }    
-    
-    // Seta  as configurações do Frame........................................................................................................
-    private void setFrame(){
-    
+    }
+
+    // Seta  as configurações do Frame..........................................
+    private void setFrame() {
+
         // Configuração da Interface InternalFramListener
         this.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
-        this.addInternalFrameListener(this);                 
-        
-        if(this.despesa != null){
+        this.addInternalFrameListener(this);
+
+        if (this.despesa != null) {
             fillFields();
             btnSalvar.setText("Atualizar");
-        }
-        else{
-            btnApagar.setEnabled(false);            
+        } else {
+            btnApagar.setEnabled(false);
         }
     }
-    
-    // Prenche os campos do frame com os dados da Despesa......................................................................
-    private void fillFields(){
+
+    // Prenche os campos do frame com os dados da Despesa.......................
+    private void fillFields() {
         txtNome.setText(despesa.getNome());
-        txtValor.setText( despesa.getValor().toString());        
-        txtDescricao.setText( despesa.getDescricao());      
-        
-        txtDataVencimento.setValue( simpleDateFormat.format( despesa.getDataVencimento().getTime()));
-        
-        if(despesa.getDataPagamento() != null){
-            txtDataPagamento.setValue( simpleDateFormat.format( despesa.getDataPagamento().getTime()));
+        txtValor.setText(despesa.getValor().toString());
+        txtDescricao.setText(despesa.getDescricao());
+
+        txtDataVencimento.setValue(simpleDateFormat.format(despesa.getDataVencimento().getTime()));
+
+        if (despesa.getDataPagamento() != null) {
+            txtDataPagamento.setValue(simpleDateFormat.format(despesa.getDataPagamento().getTime()));
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -237,53 +236,50 @@ public class frmDespesaEditar extends JInternalFrame
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //Botão Salvar.......................................................................................................................................
+    //Botão Salvar..............................................................
     private void btnSalvarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalvarActionPerformed
-        
+
         if (JOptionPane.showConfirmDialog(rootPane, "Deseja Realmente Salvar?") == 0) {
-            
-            try{
+
+            try {
                 Despesa d = new Despesa();
-                DespesaDAO dao = new DespesaDAO();  
-                
+                DespesaDAO dao = new DespesaDAO();
+
                 // Seta os atriburos do objeto
-                d.setNome( txtNome.getText());
-                d.setDescricao( txtDescricao.getText());
-                d.setValor( txtValor.getText());
-                d.setDataVencimento( (String) txtDataVencimento.getValue());                                
-                
-                if( txtDataPagamento.getValue() != null){
-                    d.setDataPagamento( (String) txtDataPagamento.getValue());
+                d.setNome(txtNome.getText());
+                d.setDescricao(txtDescricao.getText());
+                d.setValor(txtValor.getText());
+                d.setDataVencimento((String) txtDataVencimento.getValue());
+
+                if (txtDataPagamento.getValue() != null) {
+                    d.setDataPagamento((String) txtDataPagamento.getValue());
                     d.setSituacao(EnumSituacao.PAGA);
-                }
-                else{
+                } else {
                     d.setSituacao(EnumSituacao.ABERTA);
                 }
-                
-                if(this.despesa == null){
+
+                if (this.despesa == null) {
                     // Salva o Objeto
                     dao.Salvar(d);
-                }
-                else{
+                } else {
                     // Atualiz o Objeto
-                    d.setId( despesa.getId());
+                    d.setId(despesa.getId());
                     dao.Atualizar(d);
-                }                
-                
+                }
+
                 // Exibe Mensagem de confirmação
-                JOptionPane.showMessageDialog(rootPane, "Registro Salvo com Sucesso!");                
-                
+                JOptionPane.showMessageDialog(rootPane, "Registro Salvo com Sucesso!");
+
                 // Fecha o Frame
                 closeFrame();
-            }
-            catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(rootPane, e.getMessage());                
-            }                
+                JOptionPane.showMessageDialog(rootPane, e.getMessage());
+            }
         }
     }//GEN-LAST:event_btnSalvarActionPerformed
 
-    //Botão Cancelar....................................................................................................................................
+    //Botão Cancelar............................................................
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         if (JOptionPane.showConfirmDialog(rootPane, "Deseja realmente cancelar a operação?") == 0) {
             try {
@@ -294,41 +290,41 @@ public class frmDespesaEditar extends JInternalFrame
         }
     }//GEN-LAST:event_btnCancelarActionPerformed
 
-    // Botão Apagar.....................................................................................................................................
+    // Botão Apagar.............................................................
     private void btnApagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApagarActionPerformed
         if (JOptionPane.showConfirmDialog(rootPane, "Deseja realmente apagar a Despesa?") == 0) {
             try {
-                
+
                 // Apaga o registro
-                DespesaDAO dao = new DespesaDAO();  
+                DespesaDAO dao = new DespesaDAO();
                 dao.Apagar(this.despesa);
-                
+
                 // Mostra a mensagem de confirmação
                 JOptionPane.showMessageDialog(rootPane, "Despesa apagada com sucesso!");
-                
+
                 // Fecha o frame
                 closeFrame();
-                
+
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(rootPane, "Ocorreu um erro ao tentar apagar a despesa!");
             }
         }
     }//GEN-LAST:event_btnApagarActionPerformed
-    
-    // Método que Fecha o Frame.................................................................................................................
+
+    // Método que Fecha o Frame.................................................
     private void closeFrame() throws Exception {
 
-        // Abre o frame 'FrmClienteBuscar'
-        /*FrmClienteBuscar janela = new FrmClienteBuscar(Constantes.FORM_CLIENTE_EDITAR, SIZE_JFRAME);
-         this.getParent().add(janela);
-         centralizaForm(janela);
-         janela.setVisible(true);*/
-        
+        // Abre o frame 'FrmDespesaListar'
+        frmDespesaListar window = new frmDespesaListar(SIZE_JFRAME);
+        this.getParent().add(window);
+        centralizaForm(window);
+        window.setVisible(true);
+
         // Fecha o frame 'FrmClienteEditar'
         this.setVisible(false);
         this.dispose();
     }
-    
+
     // Método que centraliza o JInternalFrame...............................................................................................
     @Override
     public void centralizaForm(JInternalFrame frame) {
@@ -337,7 +333,7 @@ public class frmDespesaEditar extends JInternalFrame
         frame.setLocation((desktopSize.width - jInternalFrameSize.width) / 2,
                 (desktopSize.height - jInternalFrameSize.height) / 2);
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnApagar;
     private javax.swing.JButton btnCancelar;
@@ -355,13 +351,13 @@ public class frmDespesaEditar extends JInternalFrame
     private javax.swing.JTextField txtNome;
     private javax.swing.JTextField txtValor;
     // End of variables declaration//GEN-END:variables
-   
+
     // Método chamado quando se fecha o JInternalFrame pelo botão fechar...................................................
     @Override
     public void internalFrameClosing(InternalFrameEvent e) {
-        int option = JOptionPane.showConfirmDialog(null, 
+        int option = JOptionPane.showConfirmDialog(null,
                 "Tem certeza que deseja fechar?", "Fechar", JOptionPane.YES_NO_OPTION);
-        
+
         if (option == JOptionPane.YES_OPTION) {
             try {
                 closeFrame();

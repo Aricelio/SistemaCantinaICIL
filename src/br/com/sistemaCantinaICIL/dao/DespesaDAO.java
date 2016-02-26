@@ -17,12 +17,12 @@ import javax.persistence.TypedQuery;
  */
 public class DespesaDAO extends DAOGenerico<Despesa> {
 
-    // Construtor.........................................................................................................................................
+    // Construtor...............................................................
     public DespesaDAO() {
         super(Despesa.class);
     }
 
-    // Método que verifica a situação de uma Venda.....................................................................................
+    // Método que verifica a situação de uma Venda..............................
     public void updateExpenseSituation() {
         EntityManager manager = getEntityManager();
 
@@ -53,8 +53,8 @@ public class DespesaDAO extends DAOGenerico<Despesa> {
         }
     }
 
-    // Método Buscar...................................................................................................................................
-    public List<Despesa> Buscar(int mes, String situacao, String tipo, int ordenacao) throws Exception {
+    // Método Buscar............................................................
+    public List<Despesa> Buscar(int mes, String situacao, int ordenacao) throws Exception {
 
         EntityManager manager = getEntityManager();
 
@@ -64,22 +64,33 @@ public class DespesaDAO extends DAOGenerico<Despesa> {
 
             // Define a consulta
             String strConsulta = "SELECT d FROM Despesa d";
+            String parametro = null;
 
             // Situacao
-            if (situacao.equals("ABERTA")) {
-                strConsulta += " WHERE d.situacao like 'ABERTA'";
-            } else {
-                strConsulta += " WHERE d.situacao like 'PAGA'";
-            }
+            if (situacao != null) {
 
-            // tipo
-            if (tipo != null) {
-                strConsulta += " AND d.dataVencimento < :dataAtual";
+                parametro = " AND ";
+
+                switch (situacao) {
+                    case "ABERTA":
+                        strConsulta += " WHERE d.situacao LIKE 'ABERTA'";
+                        break;
+                    case "PAGA":
+                        strConsulta += " WHERE d.situacao LIKE 'PAGA'";
+                        break;
+                    case "ATRASADA":
+                        strConsulta += " WHERE d.dataVencimento < :dataAtual "
+                                + " AND d.dataPagamento = NULL ";
+                        break;
+                }
+            } else {
+                parametro = " WHERE ";
             }
 
             // mes
             if (mes != 0) {
-                strConsulta += " AND MONTH(d.dataVencimento) like :mes";
+                strConsulta += parametro + " MONTH(d.dataVencimento) LIKE :mes "
+                        + " OR MONTH(d.dataPagamento) LIKE :mes";
             }
 
             // ordenacao
@@ -89,20 +100,27 @@ public class DespesaDAO extends DAOGenerico<Despesa> {
                 strConsulta += " ORDER BY d.dataVencimento ";
             }
 
-            // Realiza a consulta            
+            // Cria a consulta
             TypedQuery<Despesa> query = manager.createQuery(strConsulta, Despesa.class);
-            Date dataAtual = new Date();
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(dataAtual);
 
-            if (tipo != null) {
-                query.setParameter("dataAtual", cal);
+            // Situacao
+            if (situacao != null) {
+                if (situacao.equals("ATRASADA")) {
+
+                    Date dataAtual = new Date();
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(dataAtual);
+
+                    query.setParameter("dataAtual", cal);
+                }
             }
 
+            // Mês
             if (mes != 0) {
                 query.setParameter("mes", mes);
             }
 
+            // Realiza a consulta
             List<Despesa> list = query.getResultList();
 
             // Finaliza a transação
@@ -126,7 +144,7 @@ public class DespesaDAO extends DAOGenerico<Despesa> {
         }
     }
 
-    // Método Buscar por Mês.......................................................................................................................
+    // Método Buscar por Mês....................................................
     public List<Despesa> BuscarDespesasMesAtual() throws Exception {
         EntityManager manager = getEntityManager();
         try {
@@ -134,13 +152,19 @@ public class DespesaDAO extends DAOGenerico<Despesa> {
             // Inicia a Transação
             manager.getTransaction().begin();
 
-            // Realiza a consulta            
+            // Cria a consulta
             Calendar cal = Calendar.getInstance();
             int mes = cal.get(Calendar.MONTH) + 1;
 
-            TypedQuery<Despesa> query = manager.createQuery("SELECT d FROM Despesa d "
-                    + "WHERE MONTH(d.dataVencimento) LIKE :mes", Despesa.class);
+            TypedQuery<Despesa> query = manager.createQuery(
+                    "  SELECT d FROM Despesa d "
+                    + "WHERE "
+                    + " ( MONTH(d.dataPagamento) LIKE :mes ) OR"
+                    + " ( MONTH(d.dataVencimento) LIKE :mes AND "
+                    + "   MONTH(d.dataPagamento) = NULL )", Despesa.class);
             query.setParameter("mes", mes);
+
+            // Realiza a Consulta
             List<Despesa> list = query.getResultList();
 
             // Finaliza a Transação
@@ -158,7 +182,45 @@ public class DespesaDAO extends DAOGenerico<Despesa> {
         }
     }
 
-    // Listar.................................................................................................................................................
+    // Método Buscar por Mês e Despesas Abertas
+    public List<Despesa> BuscarDespesasMesAtualOuAbertas() throws Exception {
+        EntityManager manager = getEntityManager();
+        try {
+
+            // Inicia a Transação
+            manager.getTransaction().begin();
+
+            // Cria a consulta
+            Calendar cal = Calendar.getInstance();
+            int mes = cal.get(Calendar.MONTH) + 1;
+
+            TypedQuery<Despesa> query = manager.createQuery(
+                    "SELECT d FROM Despesa d "
+                    + "WHERE ( MONTH(d.dataVencimento) LIKE :mes "
+                    + "OR MONTH(d.dataPagamento)  LIKE :mes ) "
+                    + "OR d.situacao LIKE :situacao", Despesa.class);
+            query.setParameter("mes", mes);
+            query.setParameter("situacao", EnumSituacao.ABERTA);
+
+            // Realiza a consulta
+            List<Despesa> list = query.getResultList();
+
+            // Finaliza a Transação
+            manager.getTransaction().commit();
+
+            // Retorna a lista
+            return list;
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            manager.getTransaction().rollback();
+            throw new Exception("Atenção! Não foi possivel Listar os registros!");
+        } finally {
+            manager.close();
+        }
+    }
+
+    // Listar...................................................................
     public List<Despesa> Listar() throws Exception {
         EntityManager manager = getEntityManager();
         try {
@@ -176,7 +238,7 @@ public class DespesaDAO extends DAOGenerico<Despesa> {
         }
     }
 
-    // Método que retorna o total de despesas do mês atual..........................................................................
+    // Método que retorna o total de despesas do mês atual......................
     public BigDecimal getTotalDespesaMesAtual() throws Exception {
         EntityManager manager = getEntityManager();
         try {
